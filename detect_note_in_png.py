@@ -4,7 +4,7 @@ import time
 import NMS
 
 
-score_path = "score.png"
+score_path = "SkateRock.png"
 start_time = time.clock()
 # load score picture
 score_png = cv2.imread(score_path, cv2.IMREAD_UNCHANGED)   # score
@@ -191,14 +191,25 @@ for i in range(len(note_all)):
 high_file = open("high_list.txt", "w")
 for i in range(len(high_list)):
     for j in range(len(high_list[i])):
-        high_file.write(str(high_list[i][j]))
-        high_file.write("\n")
+        for k in range(len(high_list[i][j])):
+            high_file.write(str(high_list[i][j][k]))
+            if k != len(high_list[i][j]) - 1:
+                high_file.write(",")
+        if j != len(high_list[i]) - 1:
+            high_file.write("\n")
     high_file.write("\n")
 high_file.close()
 low_file = open("low_list.txt", "w")
 for i in range(len(low_list)):
     for j in range(len(low_list[i])):
-        low_file.write(str(low_list[i][j]))
-        low_file.write("\n")
+        for k in range(len(low_list[i][j])):
+            low_file.write(str(low_list[i][j][k]))
+            if k != len(low_list[i][j]) - 1:
+                low_file.write(",")
+        if j != len(low_list[i]) - 1:
+            low_file.write("\n")
     low_file.write("\n")
 low_file.close()
+
+end_time = time.clock()
+print("Running time : %s s" % (end_time - start_time))

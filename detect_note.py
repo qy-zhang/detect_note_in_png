@@ -11,8 +11,10 @@ def list2file(l, path):
         for j in range(len(high_list[i])):
             for k in range(len(high_list[i][j])):
                 high_file.write(str(high_list[i][j][k]))
-                high_file.write(",")
-            high_file.write("\n")
+                if k != len(high_list[i][j]) - 1:
+                    high_file.write(",")
+            if j != len(high_list[i]) - 1:
+                high_file.write("\n")
         high_file.write("\n")
     high_file.close()
 
@@ -22,8 +24,10 @@ def list2file(l, path):
         for j in range(len(low_list[i])):
             for k in range(len(low_list[i][j])):
                 low_file.write(str(low_list[i][j][k]))
-                low_file.write(",")
-            low_file.write("\n")
+                if k != len(low_list[i][j]) - 1:
+                    low_file.write(",")
+            if j != len(low_list[i]) - 1:
+                low_file.write("\n")
         low_file.write("\n")
     low_file.close()
 
@@ -35,23 +39,23 @@ def detect_note_in_png(png_path, result_path):
     score = np.divide(score, 255)  # normalize
     score = np.round(score)
     # load template picture
-    quarter_png = cv2.imread("quarter.png", cv2.IMREAD_UNCHANGED)  # quarter
+    quarter_png = cv2.imread(result_path + "quarter.png", cv2.IMREAD_UNCHANGED)  # quarter
     quarter = np.array(quarter_png[:, :, -1], float)
     quarter = np.divide(quarter, 255)  # normalize
     quarter = np.round(quarter)
-    half_png = cv2.imread("half.png", cv2.IMREAD_UNCHANGED)  # half
+    half_png = cv2.imread(result_path + "half.png", cv2.IMREAD_UNCHANGED)  # half
     half = np.array(half_png[:, :, -1], float)
     half = np.divide(half, 255)  # normalize
     half = np.round(half)
-    whole_png = cv2.imread("whole.png", cv2.IMREAD_UNCHANGED)  # whole
+    whole_png = cv2.imread(result_path + "whole.png", cv2.IMREAD_UNCHANGED)  # whole
     whole = np.array(whole_png[:, :, -1], float)
     whole = np.divide(whole, 255)  # normalize
     whole = np.round(whole)
-    g_clef_png = cv2.imread("g_clef.png", cv2.IMREAD_UNCHANGED)  # half
+    g_clef_png = cv2.imread(result_path + "g_clef.png", cv2.IMREAD_UNCHANGED)  # half
     g_clef = np.array(g_clef_png[:, :, -1], float)
     g_clef = np.divide(g_clef, 255)  # normalize
     g_clef = np.round(g_clef)
-    f_clef_png = cv2.imread("f_clef.png", cv2.IMREAD_UNCHANGED)  # half
+    f_clef_png = cv2.imread(result_path + "f_clef.png", cv2.IMREAD_UNCHANGED)  # half
     f_clef = np.array(f_clef_png[:, :, -1], float)
     f_clef = np.divide(f_clef, 255)  # normalize
     f_clef = np.round(f_clef)
