@@ -4,7 +4,7 @@ import time
 import NMS
 
 
-score_path = "SkateRock.png"
+score_path = "score2.png"
 start_time = time.clock()
 # load score picture
 score_png = cv2.imread(score_path, cv2.IMREAD_UNCHANGED)   # score
@@ -48,12 +48,9 @@ append_column = np.zeros((score.shape[0], 60))
 score = np.hstack((score, append_column))
 
 # convolution
-for r_score in range(r):
-    for c_score in range(c):
-        # sum_quarter = 0
-        # for r_quarter in range(quarter.shape[0]):
-        #     for c_quarter in range(quarter.shape[1]):
-        #         sum_quarter=sum_quarter+quarter[r_quarter][c_quarter]*score[r_score+r_quarter][c_score+c_quarter]
+r_score, c_score = 0, 0
+while r_score < r:
+    while c_score < c:
         sum_quarter = np.sum(quarter * score[r_score:(r_score+quarter.shape[0]), c_score:(c_score+quarter.shape[1])])
         sum_half = np.sum(half * score[r_score:(r_score+half.shape[0]), c_score:(c_score+half.shape[1])])
         sum_whole = np.sum(whole * score[r_score:(r_score+whole.shape[0]), c_score:(c_score+whole.shape[1])])
@@ -64,6 +61,40 @@ for r_score in range(r):
         overlap_whole[r_score][c_score] = sum_whole
         overlap_g_clef[r_score][c_score] = sum_g_clef
         overlap_f_clef[r_score][c_score] = sum_f_clef
+        if sum_quarter < 50 and sum_half < 50 and sum_whole < 50:
+            c_score = c_score + quarter.shape[1]
+        c_score = c_score + 1
+    c_score = 0
+    r_score = r_score + 1
+
+r_score, c_score = 0, 0
+while r_score < r:
+    while c_score < c:
+        sum_g_clef = np.sum(g_clef * score[r_score:(r_score+g_clef.shape[0]), c_score:(c_score+g_clef.shape[1])])
+        sum_f_clef = np.sum(f_clef * score[r_score:(r_score + f_clef.shape[0]), c_score:(c_score+f_clef.shape[1])])
+        overlap_g_clef[r_score][c_score] = sum_g_clef
+        overlap_f_clef[r_score][c_score] = sum_f_clef
+        if sum_g_clef < 50 and sum_f_clef < 50:
+            c_score = c_score + g_clef.shape[1]
+        c_score = c_score + 1
+    c_score = 0
+    r_score = r_score + 1
+# for r_score in range(r):
+#     for c_score in range(c):
+#         # sum_quarter = 0
+#         # for r_quarter in range(quarter.shape[0]):
+#         #     for c_quarter in range(quarter.shape[1]):
+#         #         sum_quarter=sum_quarter+quarter[r_quarter][c_quarter]*score[r_score+r_quarter][c_score+c_quarter]
+#         sum_quarter = np.sum(quarter * score[r_score:(r_score+quarter.shape[0]), c_score:(c_score+quarter.shape[1])])
+#         sum_half = np.sum(half * score[r_score:(r_score+half.shape[0]), c_score:(c_score+half.shape[1])])
+#         sum_whole = np.sum(whole * score[r_score:(r_score+whole.shape[0]), c_score:(c_score+whole.shape[1])])
+#         sum_g_clef = np.sum(g_clef * score[r_score:(r_score+g_clef.shape[0]), c_score:(c_score+g_clef.shape[1])])
+#         sum_f_clef = np.sum(f_clef * score[r_score:(r_score + f_clef.shape[0]), c_score:(c_score+f_clef.shape[1])])
+#         overlap_quarter[r_score][c_score] = sum_quarter
+#         overlap_half[r_score][c_score] = sum_half
+#         overlap_whole[r_score][c_score] = sum_whole
+#         overlap_g_clef[r_score][c_score] = sum_g_clef
+#         overlap_f_clef[r_score][c_score] = sum_f_clef
 
 end_time = time.clock()
 print("Running time : %s s" % (end_time - start_time))
@@ -154,11 +185,11 @@ for i in range(len(f_clef_result_nms)):
     cv2.imwrite(new_name, score_png)
 
 # save result
-np.savetxt("quarter_result.txt", quarter_result_nms, "%d")
-np.savetxt("half_result.txt", half_result_nms, "%d")
-np.savetxt("whole_result.txt", whole_result_nms, "%d")
-np.savetxt("g_clef_result.txt", g_clef_result_nms, "%d")
-np.savetxt("f_clef_result.txt", f_clef_result_nms, "%d")
+# np.savetxt("quarter_result.txt", quarter_result_nms, "%d")
+# np.savetxt("half_result.txt", half_result_nms, "%d")
+# np.savetxt("whole_result.txt", whole_result_nms, "%d")
+# np.savetxt("g_clef_result.txt", g_clef_result_nms, "%d")
+# np.savetxt("f_clef_result.txt", f_clef_result_nms, "%d")
 
 note_all = np.zeros((0, 5), int)
 if len(quarter_result_nms) != 0:
