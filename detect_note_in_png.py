@@ -4,7 +4,7 @@ import time
 import NMS
 
 
-score_path = "score2.png"
+score_path = "SkateRock.png"
 start_time = time.clock()
 # load score picture
 score_png = cv2.imread(score_path, cv2.IMREAD_UNCHANGED)   # score
@@ -51,16 +51,12 @@ score = np.hstack((score, append_column))
 r_score, c_score = 0, 0
 while r_score < r:
     while c_score < c:
-        sum_quarter = np.sum(quarter * score[r_score:(r_score+quarter.shape[0]), c_score:(c_score+quarter.shape[1])])
-        sum_half = np.sum(half * score[r_score:(r_score+half.shape[0]), c_score:(c_score+half.shape[1])])
-        sum_whole = np.sum(whole * score[r_score:(r_score+whole.shape[0]), c_score:(c_score+whole.shape[1])])
-        sum_g_clef = np.sum(g_clef * score[r_score:(r_score+g_clef.shape[0]), c_score:(c_score+g_clef.shape[1])])
-        sum_f_clef = np.sum(f_clef * score[r_score:(r_score + f_clef.shape[0]), c_score:(c_score+f_clef.shape[1])])
+        sum_quarter = np.sum(quarter*score[r_score:(r_score + quarter.shape[0]), c_score:(c_score + quarter.shape[1])])
         overlap_quarter[r_score][c_score] = sum_quarter
+        sum_half = np.sum(half * score[r_score:(r_score+half.shape[0]), c_score:(c_score+half.shape[1])])
         overlap_half[r_score][c_score] = sum_half
+        sum_whole = np.sum(whole * score[r_score:(r_score+whole.shape[0]), c_score:(c_score+whole.shape[1])])
         overlap_whole[r_score][c_score] = sum_whole
-        overlap_g_clef[r_score][c_score] = sum_g_clef
-        overlap_f_clef[r_score][c_score] = sum_f_clef
         if sum_quarter < 50 and sum_half < 50 and sum_whole < 50:
             c_score = c_score + quarter.shape[1]
         c_score = c_score + 1
@@ -68,17 +64,25 @@ while r_score < r:
     r_score = r_score + 1
 
 r_score, c_score = 0, 0
+find_clef = 0
 while r_score < r:
     while c_score < c:
         sum_g_clef = np.sum(g_clef * score[r_score:(r_score+g_clef.shape[0]), c_score:(c_score+g_clef.shape[1])])
-        sum_f_clef = np.sum(f_clef * score[r_score:(r_score + f_clef.shape[0]), c_score:(c_score+f_clef.shape[1])])
         overlap_g_clef[r_score][c_score] = sum_g_clef
+        sum_f_clef = np.sum(f_clef * score[r_score:(r_score + f_clef.shape[0]), c_score:(c_score+f_clef.shape[1])])
         overlap_f_clef[r_score][c_score] = sum_f_clef
         if sum_g_clef < 50 and sum_f_clef < 50:
             c_score = c_score + g_clef.shape[1]
+        if sum_g_clef >= 2000 or sum_f_clef >= 900:
+            find_clef = 1
+            break
         c_score = c_score + 1
     c_score = 0
     r_score = r_score + 1
+    if find_clef == 1:
+        r_score = r_score + 200
+        find_clef = 0
+
 # for r_score in range(r):
 #     for c_score in range(c):
 #         # sum_quarter = 0
@@ -101,7 +105,7 @@ print("Running time : %s s" % (end_time - start_time))
 
 # filter result
 # add thresh
-quarter_thresh = 433    # max_overlap_quarter = 440
+quarter_thresh = 430    # max_overlap_quarter = 440
 quarter_result = np.where(overlap_quarter > quarter_thresh)
 # save only one result at a certain area
 box = np.zeros((len(quarter_result[0]), 5), int)
@@ -125,7 +129,7 @@ for i in range(len(half_result[0])):
     box[i][4] = overlap_half[half_result[0][i]][half_result[1][i]]
 half_result_nms = NMS.non_max_suppression_fast(box, 0.6)
 # add thresh
-whole_thresh = 478    # max_overlap_whole = 485
+whole_thresh = 470    # max_overlap_whole = 485
 whole_result = np.where(overlap_whole > whole_thresh)
 # save only one result at a certain area
 box = np.zeros((len(whole_result[0]), 5), int)
@@ -183,7 +187,7 @@ for i in range(len(f_clef_result_nms)):
     cv2.rectangle(score_png, (f_clef_result_nms[i][1], f_clef_result_nms[i][0]),
                   (f_clef_result_nms[i][3], f_clef_result_nms[i][2]), (0, 255, 0, 255), 1)
     cv2.imwrite(new_name, score_png)
-
+'''
 # save result
 # np.savetxt("quarter_result.txt", quarter_result_nms, "%d")
 # np.savetxt("half_result.txt", half_result_nms, "%d")
@@ -244,3 +248,4 @@ low_file.close()
 
 end_time = time.clock()
 print("Running time : %s s" % (end_time - start_time))
+'''
