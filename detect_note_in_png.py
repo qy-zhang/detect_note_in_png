@@ -60,7 +60,7 @@ while r_score < r:
         overlap_half[r_score][c_score] = sum_half
         sum_whole = np.sum(whole * score[r_score:(r_score+whole.shape[0]), c_score:(c_score+whole.shape[1])])
         overlap_whole[r_score][c_score] = sum_whole
-        if sum_quarter < 50 and sum_half < 50 and sum_whole < 50:
+        if sum_quarter < 20 and sum_half < 20 and sum_whole < 20:
             c_score = c_score + quarter.shape[1]
         c_score = c_score + 1
     c_score = 0
@@ -120,7 +120,7 @@ for i in range(len(quarter_result[0])):
     box[i][4] = overlap_quarter[quarter_result[0][i]][quarter_result[1][i]]
 quarter_result_nms = NMS.non_max_suppression_fast(box, 0.6)
 # add thresh
-half_thresh = 288   # max_overlap_half = 295
+half_thresh = 280   # max_overlap_half = 295
 half_result = np.where(overlap_half > half_thresh)
 # save only one result at a certain area
 box = np.zeros((len(half_result[0]), 5), int)
