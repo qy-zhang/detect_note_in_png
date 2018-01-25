@@ -120,7 +120,7 @@ for i in range(len(quarter_result[0])):
     box[i][4] = overlap_quarter[quarter_result[0][i]][quarter_result[1][i]]
 quarter_result_nms = NMS.non_max_suppression_fast(box, 0.6)
 # add thresh
-half_thresh = 280   # max_overlap_half = 295
+half_thresh = 275   # max_overlap_half = 295
 half_result = np.where(overlap_half > half_thresh)
 # save only one result at a certain area
 box = np.zeros((len(half_result[0]), 5), int)
@@ -132,7 +132,7 @@ for i in range(len(half_result[0])):
     box[i][4] = overlap_half[half_result[0][i]][half_result[1][i]]
 half_result_nms = NMS.non_max_suppression_fast(box, 0.6)
 # add thresh
-whole_thresh = 460    # max_overlap_whole = 485
+whole_thresh = 478    # max_overlap_whole = 485
 whole_result = np.where(overlap_whole > whole_thresh)
 # save only one result at a certain area
 box = np.zeros((len(whole_result[0]), 5), int)
@@ -197,7 +197,7 @@ np.savetxt("half_result.txt", half_result_nms, "%d")
 np.savetxt("whole_result.txt", whole_result_nms, "%d")
 np.savetxt("g_clef_result.txt", g_clef_result_nms, "%d")
 np.savetxt("f_clef_result.txt", f_clef_result_nms, "%d")
-'''
+
 note_all = np.zeros((0, 5), int)
 if len(quarter_result_nms) != 0:
     note_all = np.vstack((note_all, quarter_result_nms))
@@ -251,4 +251,4 @@ low_file.close()
 
 end_time = time.clock()
 print("Running time : %s s" % (end_time - start_time))
-'''
+

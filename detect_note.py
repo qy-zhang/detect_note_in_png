@@ -88,7 +88,7 @@ def detect_note_in_png(png_path, result_path):
             overlap_half[r_score][c_score] = sum_half
             sum_whole = np.sum(whole * score[r_score:(r_score + whole.shape[0]), c_score:(c_score + whole.shape[1])])
             overlap_whole[r_score][c_score] = sum_whole
-            if sum_quarter < 50 and sum_half < 50 and sum_whole < 50:
+            if sum_quarter < 20 and sum_half < 20 and sum_whole < 20:
                 c_score = c_score + quarter.shape[1]
             c_score = c_score + 1
         c_score = 0
@@ -159,7 +159,7 @@ def detect_note_in_png(png_path, result_path):
         box[i][4] = overlap_half[half_result[0][i]][half_result[1][i]]
     half_result_nms = NMS.non_max_suppression_fast(box, 0.6)
     # add thresh
-    whole_thresh = 478  # max_overlap_whole = 485
+    whole_thresh = 465  # max_overlap_whole = 485
     whole_result = np.where(overlap_whole > whole_thresh)
     # save only one result at a certain area
     box = np.zeros((len(whole_result[0]), 5), int)
@@ -207,15 +207,15 @@ def detect_note_in_png(png_path, result_path):
     note_all = note_all[note_all_arg]
     note_all_len, note_index = len(note_all), 0
     # remove duplicated half note
-    while note_index < note_all_len:
+    while note_index < note_all_len - 1:
         row_diff, column_diff = note_all[note_index][0]-note_all[note_index+1][0], note_all[note_index][1]-note_all[note_index+1][1]
         # half note duplicated
         if abs(row_diff)+abs(column_diff) < 4:
             if note_all[note_index][4] > note_all[note_index+1][4]:
-                np.delete(note_all, note_index, 0)
+                note_all = np.delete(note_all, note_index, 0)
                 note_all_len = note_all_len - 1
             else:
-                np.delete(note_all, note_index+1, 0)
+                note_all = np.delete(note_all, note_index+1, 0)
                 note_all_len = note_all_len - 1
         note_index = note_index + 1
 
