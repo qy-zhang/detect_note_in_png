@@ -54,11 +54,12 @@ score = np.hstack((score, append_column))
 r_score, c_score = 0, 0
 while r_score < r:
     while c_score < c:
-        sum_quarter = np.sum(quarter*score[r_score:(r_score + quarter.shape[0]), c_score:(c_score + quarter.shape[1])])
+        sum_quarter = np.sum(
+            quarter * score[r_score:(r_score + quarter.shape[0]), c_score:(c_score + quarter.shape[1])])
         overlap_quarter[r_score][c_score] = sum_quarter
-        sum_half = np.sum(half * score[r_score:(r_score+half.shape[0]), c_score:(c_score+half.shape[1])])
+        sum_half = np.sum(half * score[r_score:(r_score + half.shape[0]), c_score:(c_score + half.shape[1])])
         overlap_half[r_score][c_score] = sum_half
-        sum_whole = np.sum(whole * score[r_score:(r_score+whole.shape[0]), c_score:(c_score+whole.shape[1])])
+        sum_whole = np.sum(whole * score[r_score:(r_score + whole.shape[0]), c_score:(c_score + whole.shape[1])])
         overlap_whole[r_score][c_score] = sum_whole
         if sum_quarter < 20 and sum_half < 20 and sum_whole < 20:
             c_score = c_score + quarter.shape[1]
@@ -70,9 +71,11 @@ r_score, c_score = 0, 0
 find_clef = 0
 while r_score < r:
     while c_score < c:
-        sum_g_clef = np.sum(g_clef * score[r_score:(r_score+g_clef.shape[0]), c_score:(c_score+g_clef.shape[1])])
+        sum_g_clef = np.sum(
+            g_clef * score[r_score:(r_score + g_clef.shape[0]), c_score:(c_score + g_clef.shape[1])])
         overlap_g_clef[r_score][c_score] = sum_g_clef
-        sum_f_clef = np.sum(f_clef * score[r_score:(r_score + f_clef.shape[0]), c_score:(c_score+f_clef.shape[1])])
+        sum_f_clef = np.sum(
+            f_clef * score[r_score:(r_score + f_clef.shape[0]), c_score:(c_score + f_clef.shape[1])])
         overlap_f_clef[r_score][c_score] = sum_f_clef
         if sum_g_clef < 50 and sum_f_clef < 50:
             c_score = c_score + g_clef.shape[1]
@@ -108,7 +111,7 @@ print("Running time : %s s" % (end_time - start_time))
 
 # filter result
 # add thresh
-quarter_thresh = 430    # max_overlap_quarter = 440
+quarter_thresh = 433    # max_overlap_quarter = 440
 quarter_result = np.where(overlap_quarter > quarter_thresh)
 # save only one result at a certain area
 box = np.zeros((len(quarter_result[0]), 5), int)
@@ -132,7 +135,7 @@ for i in range(len(half_result[0])):
     box[i][4] = overlap_half[half_result[0][i]][half_result[1][i]]
 half_result_nms = NMS.non_max_suppression_fast(box, 0.6)
 # add thresh
-whole_thresh = 478    # max_overlap_whole = 485
+whole_thresh = 465    # max_overlap_whole = 485
 whole_result = np.where(overlap_whole > whole_thresh)
 # save only one result at a certain area
 box = np.zeros((len(whole_result[0]), 5), int)
@@ -155,6 +158,8 @@ for i in range(len(g_clef_result[0])):
     box[i][3] = g_clef_result[1][i] + g_clef.shape[1]
     box[i][4] = overlap_g_clef[g_clef_result[0][i]][g_clef_result[1][i]]
 g_clef_result_nms = NMS.non_max_suppression_fast(box, 0.6)
+g_clef_result_nms_arg = np.argsort(g_clef_result_nms[:, 0])  # sort by column
+g_clef_result_nms = g_clef_result_nms[g_clef_result_nms_arg]
 # add thresh
 f_clef_thresh = 900   # max_overlap_f_clef = 1007
 f_clef_result = np.where(overlap_f_clef > f_clef_thresh)
@@ -167,6 +172,8 @@ for i in range(len(f_clef_result[0])):
     box[i][3] = f_clef_result[1][i] + f_clef.shape[1]
     box[i][4] = overlap_f_clef[f_clef_result[0][i]][f_clef_result[1][i]]
 f_clef_result_nms = NMS.non_max_suppression_fast(box, 0.6)
+f_clef_result_nms_arg = np.argsort(f_clef_result_nms[:, 0])  # sort by column
+f_clef_result_nms = f_clef_result_nms[f_clef_result_nms_arg]
 
 # show detect result in picture
 new_name = score_path[:-4] + "_new.png"
@@ -207,6 +214,21 @@ if len(whole_result_nms) != 0:
     note_all = np.vstack((note_all, whole_result_nms))
 note_all_arg = np.argsort(note_all[:, 0] + note_all[:, 1])  # sort by x + y
 note_all = note_all[note_all_arg]
+note_all_len, note_index = len(note_all), 0
+# remove duplicated half note
+while note_index < note_all_len - 1:
+    row_diff, column_diff = note_all[note_index][0] - note_all[note_index + 1][0], note_all[note_index][1] - \
+                            note_all[note_index + 1][1]
+    # half note duplicated
+    if abs(row_diff) + abs(column_diff) < 4:
+        if note_all[note_index][4] > note_all[note_index + 1][4]:
+            note_all = np.delete(note_all, note_index, 0)
+            note_all_len = note_all_len - 1
+        else:
+            note_all = np.delete(note_all, note_index + 1, 0)
+            note_all_len = note_all_len - 1
+    note_index = note_index + 1
+
 high_range = np.zeros((len(g_clef_result_nms), 2), int)
 low_range = np.zeros((len(f_clef_result_nms), 2), int)
 for i in range(len(g_clef_result_nms)):

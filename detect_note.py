@@ -182,6 +182,8 @@ def detect_note_in_png(png_path, result_path):
         box[i][3] = g_clef_result[1][i] + g_clef.shape[1]
         box[i][4] = overlap_g_clef[g_clef_result[0][i]][g_clef_result[1][i]]
     g_clef_result_nms = NMS.non_max_suppression_fast(box, 0.6)
+    g_clef_result_nms_arg = np.argsort(g_clef_result_nms[:, 0])  # sort by column
+    g_clef_result_nms = g_clef_result_nms[g_clef_result_nms_arg]
     # add thresh
     f_clef_thresh = 900  # max_overlap_f_clef = 1007
     f_clef_result = np.where(overlap_f_clef > f_clef_thresh)
@@ -194,6 +196,8 @@ def detect_note_in_png(png_path, result_path):
         box[i][3] = f_clef_result[1][i] + f_clef.shape[1]
         box[i][4] = overlap_f_clef[f_clef_result[0][i]][f_clef_result[1][i]]
     f_clef_result_nms = NMS.non_max_suppression_fast(box, 0.6)
+    f_clef_result_nms_arg = np.argsort(f_clef_result_nms[:, 0])  # sort by column
+    f_clef_result_nms = f_clef_result_nms[f_clef_result_nms_arg]
 
     # arrange note to high and low list
     note_all = np.zeros((0, 5), int)

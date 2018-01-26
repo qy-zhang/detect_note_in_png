@@ -109,7 +109,7 @@ start_time = time.clock()
 #         overlap_f_clef[r_score][c_score] = sum_f_clef
 
 
-note_all = np.array([[1360,378,1390,408,286],[1360,379,1390,409,432],[1348,503,1378,533,433],[1349,503,1379,533,280],[1360,625,1390,655,285],[1360,626,1390,656,432]])
+note_all = np.array([[647,2211,677,2241,285],[647,2211,677,2241,440],[1277,2190,1307,2220,285],[1277,2190,1307,2220,440],[1360,625,1390,655,285],[1360,626,1390,656,432]])
 note_all_len, note_index = len(note_all), 0
 # remove duplicated half note
 while note_index < note_all_len:
