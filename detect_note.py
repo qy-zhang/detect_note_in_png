@@ -34,6 +34,15 @@ def list2file(l, path):
         low_file.write("\n")
     low_file.close()
 
+    g_clef_list = l[2]
+    g_clef_file = open(path + "/g_clef_list.txt", "w")
+    for i in range(len(g_clef_list)):
+        g_clef_file.write(str(g_clef_list[i][0] + 500))
+        if i != len(g_clef_list) - 1:
+            g_clef_file.write(",")
+        g_clef_file.write("\n")
+    g_clef_file.close()
+
 
 def detect_note_in_png(png_path, result_path):
     # load score picture
@@ -242,7 +251,7 @@ def detect_note_in_png(png_path, result_path):
                 low_list[j].append(note_all[i])
                 break
 
-    clef_list = [high_list, low_list]
+    clef_list = [high_list, low_list, g_clef_result_nms]
     list2file(clef_list, result_path)
 
 

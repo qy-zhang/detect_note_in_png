@@ -16,13 +16,16 @@ def traverse_file(path):
     for i in list_dir2:
         list_file = os.listdir(i)
         for j in list_file:
-            png_path = i + '/' + j
-            detect_note.detect_note_in_png(png_path, './')
             file_name, ext = os.path.splitext(j)
-            high_name = file_name + '_high_list.txt'
-            low_name = file_name + '_low_list.txt'
-            shutil.copyfile('./high_list.txt', i + '/' + high_name)
-            shutil.copyfile('./low_list.txt', i + '/' + low_name)
+            if ext == '.png':
+                png_path = i + '/' + j
+                detect_note.detect_note_in_png(png_path, './')
+                high_name = file_name + '_high_list.txt'
+                low_name = file_name + '_low_list.txt'
+                g_clef_name = file_name + '_g_clef_list.txt'
+                shutil.move('./high_list.txt', i + '/' + high_name)
+                shutil.move('./low_list.txt', i + '/' + low_name)
+                shutil.move('./g_clef_list.txt', i + '/' + g_clef_name)
 
 
 start_time = time.clock()
